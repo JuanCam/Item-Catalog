@@ -10,6 +10,7 @@ Base.metadata.bind = engine
 
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
+
 @appCatalog.route('/')
 @appCatalog.route('/home')
 def home():
@@ -17,9 +18,8 @@ def home():
 
 	sport_list = []
 	for sport in sports_items:
-		print sport[0]
 		sport_list.append({'name':str(sport[0]),'idcategory':sport[1],'item':sport[2]})
-		#
+		
 	return render_template('home.html',sport_list=sport_list,item_title='Latest Items')
 
 @appCatalog.route('/filter-items/<int:idcategory>')
@@ -31,21 +31,26 @@ def filterItem(idcategory):
 	for item in sport_items:
 		category_name = item[0]
 		items_list.append({'category_name':str(item[0]),'id_item':item[1],'item_name':item[2]})
-		
-	return render_template('items-by-category.html',items_list=items_list,category_name=category_name)
+	info = "In this section you can view all items related to a specific category, "
+	info += "you can view detailed information by clicking the item's name, edit them "
+	info += "by clicking the pencil and removing them by clicking the X. Also you can "
+	info += "filter results in the text field by typing the item's name."
+	return render_template('items-by-category.html',items_list=items_list,category_name=category_name,info=info)
 
 @appCatalog.route('/add-item')
 def addItem():
 	sports = session.query(CategoryTable).all()
 	sport_list = []
+	info = "Here you can create new items, with a description and asociate them to a specific category."
 	for sport in sports:
 		sport_list.append({'name':str(sport.name),'id':sport.id})
-	return render_template('create-item.html',sport_list=sport_list)
+	return render_template('create-item.html',sport_list=sport_list, info=info)
 
 @appCatalog.route('/edit-item/<int:iditem>')
 def editItem(iditem):
 	model = session.query(ItemTable).filter(ItemTable.id == iditem).one()
 	sports = session.query(CategoryTable).all()
+	info = "Here you can edit the selected item, also the description and the category asociated with it."
 
 	sport_list = []
 	item_model = []
@@ -54,7 +59,7 @@ def editItem(iditem):
 
 	item_model.append({'name':model.name, 'id':iditem,'category':model.category_id,'description':model.description,'sport_list':sport_list})
 
-	return render_template('update-item.html',item_model=item_model)
+	return render_template('update-item.html',item_model=item_model, info=info)
 
 @appCatalog.route('/update-item/<int:iditem>',methods=['GET','POST'])
 def updateItem(iditem):
@@ -73,11 +78,13 @@ def updateItem(iditem):
 
 @appCatalog.route('/add-category')
 def addCategory():
-	return render_template('create-category.html')
+
+	info = "In this section you'll be able to create a new category."
+	return render_template('create-category.html',info=info)
 
 @appCatalog.route('/insert-item',methods=['GET','POST'])
 def createItem():
-	
+
 	if request.method=='POST':
 		item_name = request.form['item_name']
 		id_c = request.form['category']
@@ -121,7 +128,6 @@ def viewItem(iditem):
 			category = str(sport.name)
 
 	item_model.append({'name':model.name, 'id':iditem,'category':category, 'description':model.description})
-
 
 	return render_template('view-item.html',item_model=item_model)
 if __name__=='__main__':

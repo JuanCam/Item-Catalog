@@ -19,6 +19,10 @@
             </nav>
          </div>
       </header>
+    <div class="col-xs-8 col-xs-offset-2">
+       <h1>Edit Item.</h1>
+       <p class="lead">{{info}}</p>
+    </div>
       <div class="col-xs-8 col-xs-offset-2">
       	{% for model in item_model%}
          <form class="form-inline" action="/update-item/{{model.id}}" method="POST">
