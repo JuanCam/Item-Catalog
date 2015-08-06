@@ -1,0 +1,52 @@
+<!doctype htm!>
+<html>
+<head>
+	<link rel="stylesheet" type="text/css" href="../static/css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="../static/css/bootstrap-theme.min.css">
+	<link rel="stylesheet" type="text/css" href="../static/css/styles.css">
+</head>
+<body>
+	<div class="container-fluid">
+	  <header>
+	  	<div class="col-xs-10 col-xs-offset-1">
+	  	<nav class="navbar navbar-default">
+		    <div class="col-xs-11 navbar-header">
+		      <a class="navbar-brand" href="#">
+		        Sport-Catalog Web page
+		      </a>  
+		      <p class="navbar-text navbar-right"><a href="#" class="navbar-link">Sign in</a></p>
+		    </div>
+		</nav>
+		</div>
+	  </header>
+	  <div class="col-xs-8 col-xs-offset-2">
+	  	<div class="row">
+	  		<a class="btn btn-primary" href="/add-item" role="button">Create Item</a>
+	  		<a class="btn btn-primary" href="/add-category" role="button">Create Category</a>
+	  	</div>
+	  	<div class="row">
+	  	<div class="input-group col-xs-8 col-xs-offset-2 margin-table">
+	  	  <input type="text" class="form-control" id="filter-category-table" placeholder="Type a category name"><span class="input-group-addon glyphicon glyphicon-eye-open"></span>
+	  	</div>
+	    </div>
+	    <div class="row">
+			<table class="table table-striped table-bordered table-hover margin-table">
+			   <th>Categories</th>
+			   <th>{{item_title}}</th>
+			   <tbody>
+				{% for sport in sport_list %}
+			   	<tr>
+		          <td><a href="/filter-items/{{sport.idcategory}}" class="category-name">{{sport.name}}</a></td>
+		          <td>{{sport.item}}</td>
+			   	</tr>
+				{% endfor %}
+		       </tbody>
+		    </table>
+	    </div>
+	  </div>
+    </div>
+	<script type="text/javascript" src="../static/javascript/lib/jquery-1.11.3.min.js"></script>
+	<script type="text/javascript" src="../static/javascript/lib/bootstrap.min.js"></script>
+	<script type="text/javascript" src="../static/javascript/filters.js"></script>
+</body>
+</html>
