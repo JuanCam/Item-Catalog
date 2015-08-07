@@ -1,13 +1,16 @@
+import os
 from flask import Flask, render_template, request, redirect, url_for
 appCatalog = Flask(__name__)
 import cgi
 from sqlalchemy import create_engine, func
 from sqlalchemy.orm import sessionmaker, aliased
 from database_setup import Base, CategoryTable, ItemTable
+from werkzeug import secure_filename
 
 engine = create_engine ('sqlite:///ItemCatalog.db')
 Base.metadata.bind = engine
-
+UPLOAD_FOLDER = 'static/uploads'
+appCatalog.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
@@ -89,7 +92,10 @@ def createItem():
 		item_name = request.form['item_name']
 		id_c = request.form['category']
 		description = request.form['description']
-		new_item = ItemTable(name=item_name, category_id=id_c, description=description)
+		image = request.files['item-image']
+		filename = secure_filename(image.filename)
+		image.save(os.path.join(appCatalog.config['UPLOAD_FOLDER'], filename))
+		new_item = ItemTable(name=item_name, category_id=id_c, description=description, image= UPLOAD_FOLDER+'/'+filename)
 		session.add(new_item)
 		session.commit()
 	sports = session.query(CategoryTable).all()
@@ -118,18 +124,18 @@ def removeItem(iditem):
 
 @appCatalog.route('/view-item/<int:iditem>')
 def viewItem(iditem):
+	info = "Here you can view the information about the item."
 	model = session.query(ItemTable).filter(ItemTable.id == iditem).one()
 	sports = session.query(CategoryTable).all()
-
 	category = ''
 	item_model = []
 	for sport in sports:
 		if sport.id==model.category_id:
 			category = str(sport.name)
 
-	item_model.append({'name':model.name, 'id':iditem,'category':category, 'description':model.description})
+	item_model.append({'name':model.name, 'id':iditem,'category':category, 'description':model.description, 'image':model.image})
 
-	return render_template('view-item.html',item_model=item_model)
+	return render_template('view-item.html',item_model=item_model, info = info)
 if __name__=='__main__':
 	appCatalog.debug = True;
 	appCatalog.run(host='0.0.0.0',port = 8000)

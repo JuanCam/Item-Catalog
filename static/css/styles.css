@@ -4,3 +4,6 @@
 .table.item-table th {
    text-align: center;   
 }
+.back-buttons{
+	cursor: pointer;
+}

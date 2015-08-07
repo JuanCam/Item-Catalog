@@ -20,6 +20,7 @@
          </div>
       </header>
     <div class="col-xs-8 col-xs-offset-2">
+      <span class="pull-right text-primary glyphicon glyphicon-arrow-left back-buttons"> Back</span>
        <h1>Edit Item.</h1>
        <p class="lead">{{info}}</p>
     </div>
@@ -58,13 +59,6 @@
    </div>
    <script type="text/javascript" src="../static/javascript/lib/jquery-1.11.3.min.js"></script>
    <script type="text/javascript" src="../static/javascript/lib/bootstrap.min.js"></script>
-   <script type="text/javascript">
-    //This small JavaScript piece of code, sets the value of the category to the select menu.
-    var v = $("#value-category").val()
-     $("select.category-edit-item option").filter(function (index,el) {
-         return el.value == v
-     }).attr('selected','selected')
-    
-   </script>
+   <script type="text/javascript" src="../static/javascript/filters.js"></script>
 </body>
 </html>

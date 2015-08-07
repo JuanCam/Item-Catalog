@@ -21,4 +21,13 @@ $('fn').ready(function(){
             return local_text.indexOf(query)==-1
 		}).parents("tr").css('display','none')
 	});
+	//Back buttons
+	$(".back-buttons").click(function() {
+		window.history.back()
+	})
+    //This small JavaScript piece of code, sets the value of the category to the select menu.
+    var v = $("#value-category").val()
+     $("select.category-edit-item option").filter(function (index,el) {
+         return el.value == v
+     }).attr('selected','selected')
 })

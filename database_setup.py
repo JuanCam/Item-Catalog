@@ -19,6 +19,7 @@ class ItemTable(Base):
 	id = Column(Integer, primary_key=True)
 	name = Column(String(250), nullable=True)
 	description = Column(String(1000), nullable=True)
+	image = Column(String(250), nullable=False)
 	category_id =Column(Integer, ForeignKey('Category.id'))
 	category = relationship(CategoryTable)
 

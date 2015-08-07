@@ -19,8 +19,13 @@
             </nav>
          </div>
       </header>
+
       <div class="col-xs-8 col-xs-offset-2">
+        <span class="pull-right text-primary glyphicon glyphicon-arrow-left back-buttons"> Back</span>
+       <h1>Item Information</h1>
+       <p class="lead">{{info}}</p>
       	{% for model in item_model%}
+          <img src="../{{model.image}}">
           <div class="row">
             <table class="table table-striped table-bordered table-hover margin-table item-table ">
                 <th>Item Name</th>
@@ -38,5 +43,6 @@
    </div>
    <script type="text/javascript" src="../static/javascript/lib/jquery-1.11.3.min.js"></script>
    <script type="text/javascript" src="../static/javascript/lib/bootstrap.min.js"></script>
+   <script type="text/javascript" src="../static/javascript/filters.js"></script>
 </body>
 </html>

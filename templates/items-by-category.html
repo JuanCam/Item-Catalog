@@ -20,12 +20,13 @@
 		</div>
 	  </header>
 	  <div class="col-xs-8 col-xs-offset-2">
+	  	 <span class="pull-right text-primary glyphicon glyphicon-arrow-left back-buttons"> Back</span>
 	  	 <h1>Items in {{category_name}}.</h1>
 	  	 <p class="lead">{{info}}</p>
-	  	<div class="row">
+	  	<!--<div class="row">
 	  		<a class="btn btn-primary" href="/add-item" role="button">Create Item</a>
 	  		<a class="btn btn-primary" href="/add-category" role="button">Create Category</a>
-	  	</div>
+	  	</div>-->
 	  </div>
 	  <div class="col-xs-6 col-xs-offset-3">
 	  	<div class="row">
@@ -45,7 +46,7 @@
 				   	<tr>
 			          <td><a href="/view-item/{{item.id_item}}" class="item-name">{{item.item_name}}</a>
 			          <td><a href="/edit-item/{{item.id_item}}" class="text-warning pull-right glyphicon glyphicon-pencil"></a></td>
-	                  <td><a href="/remove-item/{{item.id_item}}" class="text-danger pull-right glyphicon glyphicon-remove"></a></td>
+	                  <td><a href="/remove-item/{{item.id_item}}" class="text-danger pull-right glyphicon glyphicon-remove-circle"></a></td>
 			          </td>
 				   	</tr>
 					{% endfor %}
