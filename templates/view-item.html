@@ -14,7 +14,26 @@
                   <a class="navbar-brand" href="/home">
                     Sport-Catalog Web page
                   </a>  
-                  <p class="navbar-text navbar-right"><a href="#" class="navbar-link">Sign in</a></p>
+                  <p class="navbar-text navbar-right">
+
+                      {% if show_user %}
+                         <span class="">Hi {{username}} <img src="{{image}}" class="user-image">. <a href="/gdisconnect">Log out</a></span>
+                      {% else %}
+                      <span class="g-signin"
+                            data-scope="openid email"
+                            data-clientid="396122247433-d5bb6ae0f0n7e6heb575hlrhp1b476rm.apps.googleusercontent.com"
+                            data-redirecturi="postmessage"
+                            data-accesstype="offline"
+                            data-cookiepolicy="single_host_origin"
+                            data-callback="signInCallback"
+                            data-approvalprompt=force>
+                        </span>
+
+                      <span id="response"></span>
+                      {% endif %}
+
+                  </p>
+
                 </div>
             </nav>
          </div>
