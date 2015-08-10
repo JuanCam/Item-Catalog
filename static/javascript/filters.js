@@ -1,4 +1,5 @@
 $('fn').ready(function(){
+
 	$('#filter-item-table').keyup(function() {
 		var query = $(this).val(),
 		    local_text = ''
@@ -29,5 +30,15 @@ $('fn').ready(function(){
     var v = $("#value-category").val()
      $("select.category-edit-item option").filter(function (index,el) {
          return el.value == v
-     }).attr('selected','selected')
+     }).attr('selected','selected');
+     //Triggres the input file
+    $(".button-image-item").click(function() {
+    	$(".image-item").trigger("click")
+    });
+    $(".delete-items").click(function() {
+    	var data = $(this).attr('data-id'),
+    		remove = confirm('Are sure you want to remove this item?')
+    	if(remove)
+    		location.href="/remove-item/" +data
+    })
 })

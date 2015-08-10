@@ -46,7 +46,7 @@
 				   	<tr>
 			          <td><a href="/view-item/{{item.id_item}}" class="item-name">{{item.item_name}}</a>
 			          <td><a href="/edit-item/{{item.id_item}}" class="text-warning pull-right glyphicon glyphicon-pencil"></a></td>
-	                  <td><a href="/remove-item/{{item.id_item}}" class="text-danger pull-right glyphicon glyphicon-remove-circle"></a></td>
+	                  <td><a href="javascript:void(0)" data-id="{{item.id_item}}" class="delete-items text-danger pull-right glyphicon glyphicon-remove-circle"></a></td>
 			          </td>
 				   	</tr>
 					{% endfor %}

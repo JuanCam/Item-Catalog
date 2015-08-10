@@ -7,3 +7,10 @@
 .back-buttons{
 	cursor: pointer;
 }
+.img-view{
+	width: 160px;
+	height: 150px;
+}
+.image-item{
+	visibility: hidden;
+}

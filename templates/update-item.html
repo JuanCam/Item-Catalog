@@ -26,7 +26,7 @@
     </div>
       <div class="col-xs-8 col-xs-offset-2">
       	{% for model in item_model%}
-         <form class="form-inline" action="/update-item/{{model.id}}" method="POST">
+         <form class="form-inline" enctype="multipart/form-data" action="/update-item/{{model.id}}" method="POST">
              <div class="row"> 
              		<div class="col-xs-6">
                       <label >Item:</label>
@@ -38,17 +38,22 @@
                 </div>
              </div>
             <div class="row margin-table">
-                <div class="col-xs-6">
-                      <label >Category:</label>
-                  <select class="form-control category-edit-item" name="category" aria-labelledby="dropdownMenu4">
-                    <option value="null">Select a Category</option>
-                   {% for sport in model.sport_list %}
-                    <option value="{{sport.id}}">{{sport.name}}</option>
-                   {% endfor %}
-                  </select>
-                  <input type="hidden" value="{{model.category}}" id="value-category">
-                </div>
-           	  <div class="col-xs-6">
+              <div class="col-xs-4">
+                <label >Category:</label>
+                <select class="form-control category-edit-item" name="category" aria-labelledby="dropdownMenu4">
+                  <option value="null">Select a Category</option>
+                 {% for sport in model.sport_list %}
+                   <option value="{{sport.id}}">{{sport.name}}</option>
+                 {% endfor %}
+                </select>
+                <input type="hidden" value="{{model.category}}" id="value-category">
+              </div>
+              <div class="col-xs-4">
+                <img src="../{{model.image}}" class="img-responsive img-rounded img-view">
+                <button type="button" class="btn btn-default button-image-item"><span class="glyphicon glyphicon-picture"></span>Upload Image</button>
+                <input type="file" name="item-image" class="image-item" value="Select an image">
+              </div>
+           	  <div class="col-xs-4">
            		  <button type="submit" class="btn btn-warning" >Save changes <span class="glyphicon glyphicon-floppy-disk"></span></button>
                  </div>
               </div>

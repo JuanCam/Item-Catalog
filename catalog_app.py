@@ -1,12 +1,24 @@
 import os
 from flask import Flask, render_template, request, redirect, url_for
+
 appCatalog = Flask(__name__)
 import cgi
 from sqlalchemy import create_engine, func
 from sqlalchemy.orm import sessionmaker, aliased
 from database_setup import Base, CategoryTable, ItemTable
 from werkzeug import secure_filename
+from oauth2client.client import flow_from_clientsecrets
+from oauth2client.client import FlowExchangeError
+import httplib2
+import json
+from flask import make_response
+import requests
 
+appCatalog.config['SESSION_TYPE'] = 'filesystem'
+from flask import session as login_session
+import random, string
+
+CLIENT_ID = json.loads(open('client_secret.json','r').read())['web']['client_id']
 engine = create_engine ('sqlite:///ItemCatalog.db')
 Base.metadata.bind = engine
 UPLOAD_FOLDER = 'static/uploads'
@@ -14,7 +26,63 @@ appCatalog.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
+@appCatalog.route('/gconnect',methods=['POST'])
+def gconnect():
+	if request.args.get('state') != login_session['state']:
+		response = make_response(json.dumps('Invalid state parameter.'),401)
+		response.headers['Content-Type'] = 'application/json'
+		return response
+	code = request.data
+	try:
+		oauth_flow = flow_from_clientsecrets('client_secret.json',scope='')
+		oauth_flow.redirect_uri = 'postmessage'
+		credentials = oauth_flow.step2_exchange(code)
+	except FlowExchangeError:
+		response = make_response(json.dumps('Failed to upgrade the authorization code.'),401)
+		response.headers['Content-Type'] = 'application/json'
+		return response
+	token = credentials.access_token
+
+	url = ('https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=%s'%token)
+	h = httplib2.Http()
+	
+	result = json.loads(h.request(url, 'GET')[1])
+
+	#If there was an error in the access token info, kill it.
+	if result.get('error') is not None:
+		response = make_response(json.dumps(result.get('error')), 501)
+		response.headers['Content-Type'] = 'application/json'
+	#Verify that the access token is used for the intended user
+	gplus_id = credentials.id_token['sub']
+	if result['user_id'] != gplus_id:
+		response = make_response(json.dumps('Token user Id doesn\'t match given user ID'), 401)
+		response.headers['Content-Type'] = 'application/json'
+		return response
+	#Store the access token in the session for later use.
+	login_session['credentials'] = credentials
+	login_session['gplus_id'] = gplus_id
+
+	#Get user info
+	userinfo_url = 'https://www.googleapis.com/oauth2/v1/userinfo'
+	params = {'access_token':credentials.access_token, 'alt':'json'}
+	answer = requests.get(userinfo_url, params=params)
+	data = json.loads(answer.text)
+	#COLOCAR CODIGO PARA RETORNAR UNA VEZ SE REALIZE LA VALIDACION DE TODO.
+
 @appCatalog.route('/')
+@appCatalog.route('/login')
+def showLogin():
+	state = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(32))
+	login_session['state'] = state
+
+	sports_items = session.query(CategoryTable.name,CategoryTable.id,ItemTable.name).join(ItemTable.category).group_by(CategoryTable.id).order_by(CategoryTable.name).all()
+
+	sport_list = []
+	for sport in sports_items:
+		sport_list.append({'name':str(sport[0]),'idcategory':sport[1],'item':sport[2]})
+		
+	return render_template('home.html',sport_list=sport_list,item_title='Latest Items',buttons_rows='',STATE=state)
+
 @appCatalog.route('/home')
 def home():
 	sports_items = session.query(CategoryTable.name,CategoryTable.id,ItemTable.name).join(ItemTable.category).group_by(CategoryTable.id).order_by(CategoryTable.name).all()
@@ -22,8 +90,9 @@ def home():
 	sport_list = []
 	for sport in sports_items:
 		sport_list.append({'name':str(sport[0]),'idcategory':sport[1],'item':sport[2]})
-		
-	return render_template('home.html',sport_list=sport_list,item_title='Latest Items')
+	buttons_rows = '<a class="btn btn-primary" href="/add-item" role="button">Create Item</a>'
+	buttons_rows +='<a class="btn btn-primary" href="/add-category" role="button">Create Category</a>'
+	return render_template('home.html',sport_list=sport_list,item_title='Latest Items',buttons_rows=buttons_rows)
 
 @appCatalog.route('/filter-items/<int:idcategory>')
 def filterItem(idcategory):
@@ -34,9 +103,7 @@ def filterItem(idcategory):
 	for item in sport_items:
 		category_name = item[0]
 		items_list.append({'category_name':str(item[0]),'id_item':item[1],'item_name':item[2]})
-	info = "In this section you can view all items related to a specific category, "
-	info += "you can view detailed information by clicking the item's name, edit them "
-	info += "by clicking the pencil and removing them by clicking the X. Also you can "
+	info = "In this section you can view all items related to a specific category. Also you can "
 	info += "filter results in the text field by typing the item's name."
 	return render_template('items-by-category.html',items_list=items_list,category_name=category_name,info=info)
 
@@ -60,7 +127,7 @@ def editItem(iditem):
 	for sport in sports:
 		sport_list.append({'name':str(sport.name),'id':sport.id})
 
-	item_model.append({'name':model.name, 'id':iditem,'category':model.category_id,'description':model.description,'sport_list':sport_list})
+	item_model.append({'name':model.name, 'id':iditem,'category':model.category_id,'image':model.image,'description':model.description,'sport_list':sport_list})
 
 	return render_template('update-item.html',item_model=item_model, info=info)
 
@@ -71,10 +138,15 @@ def updateItem(iditem):
 		item_name = request.form['item_name']
 		id_c = request.form['category']
 		description = request.form['description']
+		image = request.files['item-image']
 		current_item = session.query(ItemTable).filter(ItemTable.id == iditem).one()
 		current_item.name = item_name
 		current_item.category_id = id_c
 		current_item.description = description
+		filename = secure_filename(image.filename)
+		if filename!='':
+			current_item.image = UPLOAD_FOLDER+'/'+filename
+			image.save(os.path.join(appCatalog.config['UPLOAD_FOLDER'], filename))
 		session.add(current_item)
 		session.commit()
 	return redirect('home')
@@ -138,4 +210,5 @@ def viewItem(iditem):
 	return render_template('view-item.html',item_model=item_model, info = info)
 if __name__=='__main__':
 	appCatalog.debug = True;
+	appCatalog.secret_key = 'JsBwnLvJQPsopQ0UN6Zkf9Av'
 	appCatalog.run(host='0.0.0.0',port = 8000)
