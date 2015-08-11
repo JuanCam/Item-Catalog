@@ -3,7 +3,7 @@
 GENERAL USAGE NOTES
 -------------------
 
--First of all, For using this webiste follow this steps:<br>
+-First of all, for using this webiste follow this steps:<br>
 *Install Vagrant and VirtualBox.<br>
 *Clone the fullstack-nanodegree-vm.<br>
 *Launch the Vagrant VM (vagrant up).<br>
