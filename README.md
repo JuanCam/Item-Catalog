@@ -2,10 +2,10 @@
 
 GENERAL USAGE NOTES
 -------------------
--The Item Catalog application consists of a list of sport items grouped by sports, also you can view the specific information about the item, the category it belongs to and its corresponding image.
--There are 2 modules.
--The first one is for unregistered users who can view all the information about the items, filter them by their names and the categories, but they cannot handle the CRUD
--The second one is for registered users who has the same permissions of the unregistered users, but besides that, they can handle the CRUD, by creating items and categories, editing items by clicking the pencil in the item-filtered by category view and deleting them in this same view.
+-The Item Catalog application consists of a list of sport items grouped by sports, also you can view the specific information about the item, the category it belongs to and its corresponding image.<br>
+-This application si divided into 2 modules.<br>
+-The first one is for unregistered users who can view all the information about the items, filter them by their names and the categories, but they cannot handle the CRUD.<br>
+-The second one is for registered users who has the same permissions of the unregistered users, but besides that, they can handle the CRUD, by creating items and categories, editing items by clicking the pencil in the item-filtered by category view and deleting them in this same view.<br>
 -For using this webiste you must download the source code and execute the following file : catalog_app.py. Remember you must have flask and sqlalchemy installed in your machine.</br>
 -Populate the database and enjoy this site.</br>
 
