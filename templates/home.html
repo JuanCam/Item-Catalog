@@ -38,12 +38,6 @@
 		</div>
 	  </header>
 	  <div class="col-xs-8 col-xs-offset-2">
-	  	{% if buttons_rows %}
-	  	<div class="row">
-	  		<a class="btn btn-primary" href="/add-item" role="button">Create Item</a>
-			<a class="btn btn-primary" href="/add-category" role="button">Create Category</a>
-	  	</div>
-	  	{% endif %}
 	  	<div class="row">
 	  	<div class="input-group col-xs-8 col-xs-offset-2 margin-table">
 	  	  <input type="text" class="form-control" id="filter-category-table" placeholder="Type a category name"><span class="input-group-addon glyphicon glyphicon-eye-open"></span>
@@ -63,6 +57,15 @@
 		       </tbody>
 		    </table>
 	    </div>
+	  	{% if buttons_rows %}
+	  	<div class="row bg-info">
+	  		<div class="col-xs-12">
+		  		<p class="text-warning">This section is only for logged users, here you can create items and categories</p>
+		  		<a class="btn btn-primary" href="/add-item" role="button">Create Item</a>
+				<a class="btn btn-primary" href="/add-category" role="button">Create Category</a>
+			</div>
+	  	</div>
+	  	{% endif %}
 	  </div>
     </div>
 	<script type="text/javascript" src="../static/javascript/lib/jquery-1.11.3.min.js"></script>

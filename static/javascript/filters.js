@@ -1,5 +1,7 @@
+//JS functionality
+//Developed by Juan Camilo Gutierrez - 1/August/2015
 $('fn').ready(function(){
-
+	// Filters that shows the content of the typed word.
 	$('#filter-item-table').keyup(function() {
 		var query = $(this).val(),
 		    local_text = ''
@@ -22,6 +24,7 @@ $('fn').ready(function(){
             return local_text.indexOf(query)==-1
 		}).parents("tr").css('display','none')
 	});
+
 	//Back buttons
 	$(".back-buttons").click(function() {
 		window.history.back()
