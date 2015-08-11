@@ -17,7 +17,9 @@
 		        Sport-Catalog Web page
 		      </a>  
 		      <p class="navbar-text navbar-right">
-		      	
+		      	{% if buttons_rows %}
+		      	   <span class="">Hi {{username}} <img src="{{image}}" class="user-image">. <a href="/gdisconnect">Log out</a></span>
+		      	{% else %}
 				    <span class="g-signin"
 				          data-scope="openid email"
 				          data-clientid="396122247433-d5bb6ae0f0n7e6heb575hlrhp1b476rm.apps.googleusercontent.com"
@@ -27,17 +29,21 @@
 				          data-callback="signInCallback"
 				          data-approvalprompt=force>
 		      		</span>
-		      	<div id="response"></div>
-		      	<!--<a href="#" class="navbar-link">Sign in</a>-->
+
+		      	<span id="response"></span>
+		      	{% endif %}
 		      </p>
 		    </div>
 		</nav>
 		</div>
 	  </header>
 	  <div class="col-xs-8 col-xs-offset-2">
+	  	{% if buttons_rows %}
 	  	<div class="row">
-	  		{{buttons_row}}
+	  		<a class="btn btn-primary" href="/add-item" role="button">Create Item</a>
+			<a class="btn btn-primary" href="/add-category" role="button">Create Category</a>
 	  	</div>
+	  	{% endif %}
 	  	<div class="row">
 	  	<div class="input-group col-xs-8 col-xs-offset-2 margin-table">
 	  	  <input type="text" class="form-control" id="filter-category-table" placeholder="Type a category name"><span class="input-group-addon glyphicon glyphicon-eye-open"></span>
@@ -71,8 +77,9 @@
 					contentType:'application/octet-stream; charset=utf-8',
 					data: authResult['code'],
 					success:function(result) {
+						
 						if (result){
-							$("#response").html('Success!!')
+							$("#response").html(result)
 							setTimeout(function() {
 								window.location.href = "/home"
 							},4000)
