@@ -1,36 +1,40 @@
 import os
-from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
-
-appCatalog = Flask(__name__)
 import cgi
+import httplib2
+import json
+import random
+import string
+import requests
+from flask import Flask, render_template, request, redirect, url_for, flash,
+jsonify
 from sqlalchemy import create_engine, func
 from sqlalchemy.orm import sessionmaker, aliased
 from database_setup import Base, CategoryTable, ItemTable
 from werkzeug import secure_filename
-#Import all the necesary files and clases for authentication
+# Import all the necesary files and clases for authentication
 from oauth2client.client import flow_from_clientsecrets
 from oauth2client.client import FlowExchangeError
-import httplib2
-import json
 from flask import make_response
-import requests
-
 from flask import session as login_session
-import random, string
+
+appCatalog = Flask(__name__)
+
 
 appCatalog.config['SESSION_TYPE'] = 'filesystem'
-CLIENT_ID = json.loads(open('client_secret.json','r').read())['web']['client_id']
-engine = create_engine ('sqlite:///ItemCatalog.db')
+LOADED_JSON = json.loads(open('client_secret.json', 'r').read())
+CLIENT_ID = ['web']['client_id']
+engine = create_engine('sqlite:///ItemCatalog.db')
 Base.metadata.bind = engine
 UPLOAD_FOLDER = 'static/uploads'
 appCatalog.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
-#Methods and views related to the user authentication.
-@appCatalog.route('/gconnect',methods=['POST'])
+
+# Methods and views related to the user authentication.
+@appCatalog.route('/gconnect', methods=['POST'])
 def gconnect():
-	#Gconnect function for linking the gmail account with the user session
+	# Gconnect function for linking the gmail account with the user session
 	if request.args.get('state') != login_session['state']:
 		response = make_response(json.dumps('Invalid state parameter.'),401)
 		response.headers['Content-Type'] = 'application/json'
