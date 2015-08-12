@@ -7,7 +7,7 @@ GENERAL USAGE NOTES
 *Install Vagrant and VirtualBox.<br>
 *Clone the fullstack-nanodegree-vm.<br>
 *Launch the Vagrant VM (vagrant up).<br>
-*Upgrade Flask to Flask0.9v by typing pip install flask==0.9
+*Upgrade Flask to Flask0.9v by typing pip install flask==0.9.<br>
 *Download or clone this project (Item-Catalog) inside the vagrant folder.<br>
 *Change directory to the project folder: first run the database_setup.py file (python database_setup.py) and then run the application within the VM (python catalog_app.py)<br>
 *Access and test your application by visiting http://localhost:8000 locally, note the application will only run in the 8000 port.<br>
