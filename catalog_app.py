@@ -8,11 +8,13 @@ import requests
 import random
 import string
 from flask import Flask, render_template, request, redirect, url_for, flash, \
-	jsonify
+	jsonify, g
+
 from sqlalchemy import create_engine, func
 from sqlalchemy.orm import sessionmaker, aliased
 from database_setup import Base, CategoryTable, ItemTable
 from werkzeug import secure_filename
+from functools import wraps
 # Import all the necesary files and clases for authentication
 from oauth2client.client import flow_from_clientsecrets
 from oauth2client.client import FlowExchangeError
@@ -40,6 +42,17 @@ UPLOAD_FOLDER = 'static/uploads'
 appCatalog.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
+
+
+# Requiered login function
+def login_requiered(f):
+    """View decorator for allowing the non-public pages"""
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'name' not in login_session:
+            return redirect(url_for('showLogin', next=request.url))
+        return f(*args, **kwargs)
+    return decorated_function
 
 
 # Methods and views related to the user authentication.
@@ -107,6 +120,7 @@ def gdisconnect():
         response.headers['Content-Type'] = 'application/json'
         return response
     # Execute Get HTTP request to revoke current token
+
     access_token = credentials.access_token
     url = 'https://accounts.google.com/o/oauth2/revoke?token=%s'\
           % access_token
@@ -160,6 +174,7 @@ def showLogin():
 
 
 @appCatalog.route('/home')
+@login_requiered
 def home():
     """This method for the home view once a user is logged in. - not public"""
 
@@ -169,9 +184,6 @@ def home():
         join(ItemTable.category).\
         group_by(CategoryTable.id).\
         order_by(CategoryTable.name).all()
-    # Protect the page
-    if 'name' not in login_session:
-        return redirect('/')
 
     name = login_session['name']
     image = login_session['picture']
@@ -236,14 +248,13 @@ def filterItem(idcategory):
 
 
 @appCatalog.route('/add-item')
+@login_requiered
 def addItem():
     """This is the create item view - not public"""
 
     # Get the Current Categories, this is for constructing the select menu.
     sports = session.query(CategoryTable).all()
     sport_list = []
-    if 'name' not in login_session:
-        return redirect('/')
 
     name = login_session['name']
     image = login_session['picture']
@@ -260,6 +271,7 @@ def addItem():
 
 
 @appCatalog.route('/edit-item/<int:iditem>')
+@login_requiered
 def editItem(iditem):
     """Edit Item view, it allows the user to change
     the item information - not public
@@ -270,8 +282,6 @@ def editItem(iditem):
     sports = session.query(CategoryTable).all()
     info = "Here you can edit the selected item, also the description " \
            "and the category asociated with it."
-    if 'name' not in login_session:
-        return redirect('/')
 
     name = login_session['name']
     image = login_session['picture']
@@ -296,6 +306,7 @@ def editItem(iditem):
 
 
 @appCatalog.route('/update-item/<int:iditem>', methods=['GET', 'POST'])
+@login_requiered
 def updateItem(iditem):
     """Update Item view action
     Arguments : iditem - is the id of the edited item"""
@@ -326,10 +337,9 @@ def updateItem(iditem):
 
 
 @appCatalog.route('/add-category')
+@login_requiered
 def addCategory():
     """View for creating a new category - not public"""
-    if 'name' not in login_session:
-        return redirect('/')
 
     name = login_session['name']
     image = login_session['picture']
@@ -341,6 +351,7 @@ def addCategory():
 
 
 @appCatalog.route('/insert-item', methods=['GET', 'POST'])
+@login_requiered
 def createItem():
     """View for creating a new Item"""
     if request.method == 'POST':
@@ -364,6 +375,7 @@ def createItem():
 
 
 @appCatalog.route('/insert-category', methods=['GET', 'POST'])
+@login_requiered
 def createCategory():
     """Create Category action"""
     if request.method == 'POST':
@@ -375,11 +387,10 @@ def createCategory():
 
 
 @appCatalog.route('/remove-item/<int:iditem>', methods=['GET', 'POST'])
+@login_requiered
 def removeItem(iditem):
     """Delete the specific item
     Arguments : iditem - is the id of item that will be removed"""
-    if 'name' not in login_session:
-        return redirect('/')
 
     item = session.query(ItemTable).filter_by(id=iditem).one()
     session.delete(item)
